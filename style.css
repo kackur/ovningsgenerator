@@ -1,0 +1,43 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f0f0f0;
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#canvas {
+  margin-top: 20px;
+  background: #d0ffd0;
+  border: 2px solid #333;
+  width: 600px;
+  height: 360px;
+}
+
+.player {
+  fill: blue;
+}
+
+.player.red {
+  fill: red;
+}
+
+.cone {
+  fill: orange;
+}
+
+.movement {
+  stroke: black;
+  stroke-dasharray: 3,2;
+}
