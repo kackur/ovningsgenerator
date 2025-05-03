@@ -47,7 +47,7 @@ function draw(data) {
 async function generate() {
   const description = document.getElementById("description").value;
 
-  const response = await fetch("https://ovningsgenerator.vercel.app/api/generate", {
+  const response = await fetch("https://ovningsgenerator-8h3djxg8q-kackurs-projects.vercel.app/api/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ description })
