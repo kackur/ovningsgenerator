@@ -1,23 +1,10 @@
 const svg = document.getElementById("field");
 
-const demoData = {
-  field: { width: 100, height: 60 },
-  players: [
-    { id: "A", team: "blue", x: 10, y: 30 },
-    { id: "B", team: "red", x: 90, y: 30 }
-  ],
-  cones: [
-    { x: 50, y: 30 }
-  ],
-  movements: [
-    { from: "A", to: { x: 50, y: 30 }, type: "dribble" }
-  ]
-};
-
 function draw(data) {
-  svg.innerHTML = ""; // Töm tidigare SVG
+  svg.innerHTML = ""; // Rensa tidigare plan
 
-  const scaleX = 1, scaleY = 1;
+  const scaleX = 1;
+  const scaleY = 1;
 
   function drawCircle(x, y, className) {
     const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -38,14 +25,17 @@ function draw(data) {
     svg.appendChild(l);
   }
 
+  // Rita spelare
   data.players.forEach(p => {
     drawCircle(p.x * scaleX, p.y * scaleY, `player ${p.team}`);
   });
 
+  // Rita koner
   data.cones.forEach(c => {
     drawCircle(c.x * scaleX, c.y * scaleY, "cone");
   });
 
+  // Rita rörelser
   data.movements.forEach(m => {
     const from = data.players.find(p => p.id === m.from);
     if (from) {
@@ -54,7 +44,21 @@ function draw(data) {
   });
 }
 
-function generate() {
-  // Här ersätter vi med GPT-anrop senare
-  draw(demoData);
+async function generate() {
+  const description = document.getElementById("description").value;
+
+  const response = await fetch("https://ovningsgenerator.vercel.app/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description })
+  });
+
+  const data = await response.json();
+
+  try {
+    const parsed = JSON.parse(data.result);
+    draw(parsed);
+  } catch (e) {
+    alert("Kunde inte tolka svaret från GPT:\n\n" + data.result);
+  }
 }
