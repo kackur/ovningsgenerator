@@ -1,0 +1,2 @@
+# ovningsgenerator
+AI ovningsgenerator
