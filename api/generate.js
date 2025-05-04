@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4", // eller gpt-3.5-turbo om du använder det
+        model: "gpt-3.5-turbo",
         messages: [
           {
             role: "user",
