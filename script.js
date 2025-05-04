@@ -61,4 +61,5 @@ async function generate() {
   } catch (e) {
     alert("Kunde inte tolka svaret från GPT:\n\n" + data.result);
   }
+  // Trigger redeploy
 }
