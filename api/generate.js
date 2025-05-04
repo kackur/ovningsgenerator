@@ -1,13 +1,10 @@
 export default async function handler(req, res) {
-  // ✅ CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Preflight request
   if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== "POST") {
@@ -15,14 +12,13 @@ export default async function handler(req, res) {
   }
 
   const { description } = req.body;
-
   if (!description) {
     return res.status(400).json({ error: "Missing description" });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
-
   if (!apiKey) {
+    console.error("❌ OPENAI_API_KEY is missing.");
     return res.status(500).json({ error: "Missing OpenAI API key" });
   }
 
@@ -34,35 +30,27 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4", // eller gpt-3.5-turbo om du använder det
         messages: [
           {
-            role: "system",
-            content: "Du är en AI som ritar upp sportövningar i SVG-format baserat på textbeskrivningar.",
-          },
-          {
             role: "user",
-            content: `Skapa en övningsskiss baserat på följande instruktion: ${description}. Svaret ska vara ren SVG-kod utan förklaringar.`,
+            content: `Skapa SVG för denna fotbollsövning: ${description}`,
           },
         ],
-        temperature: 0.7,
       }),
     });
 
-    const result = await openaiRes.json();
+    const data = await openaiRes.json();
+    console.log("✅ GPT response:", JSON.stringify(data));
 
-    if (openaiRes.status !== 200) {
-      return res.status(500).json({ error: result?.error?.message || "OpenAI error" });
+    if (!data.choices || !data.choices[0].message.content) {
+      return res.status(500).json({ error: "Unexpected GPT response", raw: data });
     }
 
-    const svg = result.choices?.[0]?.message?.content;
-
-    if (!svg || !svg.includes("<svg")) {
-      return res.status(500).json({ error: "Svar saknar giltig SVG-kod." });
-    }
-
-    return res.status(200).json({ svg });
+    const svg = data.choices[0].message.content;
+    res.status(200).json({ svg });
   } catch (error) {
-    return res.status(500).json({ error: "Server error: " + error.message });
+    console.error("❌ GPT call failed:", error);
+    res.status(500).json({ error: error.message || "Something went wrong" });
   }
 }
